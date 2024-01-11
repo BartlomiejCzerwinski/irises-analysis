@@ -18,6 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('irises-analysis', include("irises-analysis.urls")),
+    path('irises_analysis', include("irises_analysis.urls")),
     path('admin/', admin.site.urls),
 ]
