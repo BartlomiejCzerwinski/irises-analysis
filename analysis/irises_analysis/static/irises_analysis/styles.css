@@ -1,5 +1,11 @@
 .nav {
     padding-top: 10px;
+    padding-bottom: 30px;
 }
 
+.body {
+    width: 50%;
+    margin-right: auto;
+    margin-left: auto;
+}
 
