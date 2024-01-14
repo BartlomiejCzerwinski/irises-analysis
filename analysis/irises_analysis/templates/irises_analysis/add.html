@@ -2,54 +2,45 @@
 {% load static %}
 
 {% block body %}
-<form>
+<form id="addIrisForm" method="post">
+    <div class="row mb-3 row-input">
+        <h2>Add new iris</h2>
+    </div>
+    {% csrf_token %}
     <div class="row mb-3 row-input">
         <div class="input-group addFormInput">
-            <input type="text" class="form-control" id="inputSepalLength" aria-label="Dollar amount (with dot and two decimal places)" placeholder="sepal length">
+            {{ form.sepal_length }}
             <span class="input-group-text">cm</span>
             <span class="input-group-text">0.00</span>
         </div>
         <div class="input-group addFormInput">
-            <input type="text" class="form-control" id="inputSepalWidth" aria-label="Dollar amount (with dot and two decimal places)" placeholder="sepal width">
+            {{ form.sepal_length }}
             <span class="input-group-text">cm</span>
             <span class="input-group-text">0.00</span>
         </div>
     </div>
-    <div class="row mb-3">
+
+    <div class="row mb-3 row-input">
         <div class="input-group addFormInput">
-            <input type="text" class="form-control" id="inputPetalLength" aria-label="Dollar amount (with dot and two decimal places)" placeholder="petal length">
+            {{ form.sepal_length }}
             <span class="input-group-text">cm</span>
             <span class="input-group-text">0.00</span>
         </div>
         <div class="input-group addFormInput">
-            <input type="text" class="form-control" id="inputPetalWidth" aria-label="Dollar amount (with dot and two decimal places)" placeholder="petal width">
+            {{ form.sepal_length }}
             <span class="input-group-text">cm</span>
             <span class="input-group-text">0.00</span>
         </div>
     </div>
-    <fieldset class="row mb-3">
+
+    <div class="row mb-3 row-input">
         <legend class="col-form-label col-sm-2 pt-0">Class</legend>
-        <div class="col-sm-10">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="gridRadios" id="classSetosa" value="option1">
-                <label class="form-check-label" for="classSetosa">
-                    Setosa
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="gridRadios" id="classVersicolour" value="option2">
-                <label class="form-check-label" for="classVersicolour">
-                    Versicolour
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="gridRadios" id="classVirginica" value="option3">
-                <label class="form-check-label" for="classVirginica">
-                    Virginica
-                </label>
-            </div>
-        </div>
-    </fieldset>
-    <button type="submit" class="btn btn-primary">Add</button>
+        {{ form.iris_class }}
+    </div>
+
+    <div class="row mb-3 row-input">
+        <button type="submit" class="btn btn-primary">Add new iris</button>
+    </div>
+
 </form>
 {% endblock %}

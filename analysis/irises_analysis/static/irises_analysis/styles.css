@@ -9,3 +9,23 @@
     margin-left: auto;
 }
 
+.addFormInput {
+    width: 40%;
+    flex: 1;
+    margin: 0 50px; /* Dodaj margines 50px na lewo i 50px na prawo dla przerwy 100px */
+}
+
+
+.row-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#addIrisForm {
+    border: 1px solid #4c4847;
+    border-radius: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
