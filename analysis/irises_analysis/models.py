@@ -7,5 +7,5 @@ class Iris(models.Model):
     sepal_length = models.FloatField()
     sepal_width = models.FloatField()
     petal_length = models.FloatField()
-    sepal_width = models.FloatField()
+    petal_width = models.FloatField()
     iris_class = models.IntegerField()

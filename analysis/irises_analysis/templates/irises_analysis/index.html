@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block body %}
-
+<!-- Example single danger button -->
 <table class="table table-striped">
     <thead>
         <tr>
@@ -12,11 +12,33 @@
             <th scope="col">petal length</th>
             <th scope="col">petal width</th>
             <th scope="col">class</th>
+            <th scope="col">action</th>
         </tr>
     </thead>
     <tbody>
-
+        {% for row in data%}
+        <tr>
+            <th>{{ row.pk }}</th>
+            <th>{{ row.fields.sepal_length }}</th>
+            <th>{{ row.fields.sepal_width }}</th>
+            <th>{{ row.fields.petal_length }}</th>
+            <th>{{ row.fields.petal_width }}</th>
+            <th>{{ row.fields.iris_class }}</th>
+            <th>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Edit</a></li>
+                        <li><a class="dropdown-item" href="#">Delete</a></li>
+                    </ul>
+                </div>
+            </th>
+        </tr>
+        {% endfor %}
     </tbody>
+
 
 </table>
 {% endblock %}

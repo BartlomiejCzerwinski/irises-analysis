@@ -35,7 +35,8 @@ def add(request):
 def data(request):
     if request.method == "GET":
         queryset = models.Iris.objects.all()
+        print("DATA API: ", queryset)
         data = serialize('json', queryset)
-        return HttpResponse(data)
+        return HttpResponse(data, content_type='application/json')
     if request.method == "POST":
         return HttpResponse("POST")

@@ -2,9 +2,9 @@ from django import forms
 
 class Form_add(forms.Form):
     CLASS_CHOICES = [
-            ('Setosa ', 'Setosa'),
-            ('Versicolour', 'Versicolour'),
-            ('Virginica', 'Virginica'),
+            (1, 'Setosa'),
+            (2, 'Versicolour'),
+            (3, 'Virginica'),
         ]
     sepal_length = forms.DecimalField(decimal_places=2, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'sepal length'}), label='')
     sepal_width = forms.DecimalField(decimal_places=2, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'sepal width'}), label='')
