@@ -8,4 +8,5 @@ urlpatterns = [
     path("predict", views.predict, name="predict"),
     path("api/data", views.data, name="data"),
     path("api/data/<str:record_id>", views.delete, name="delete")
+    #path("api/predictions") TODO
 ]
