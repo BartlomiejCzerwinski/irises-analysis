@@ -2,6 +2,19 @@
 {% load static %}
 
 {% block body %}
+
+<ul class="nav nav-pills justify-content-center">
+    <li class="nav-item">
+        <a class="nav-link" href="{%url 'index'%}">Main Page</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="{%url 'add'%}">Add</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{%url 'predict'%}">Predict</a>
+    </li>
+</ul>
+
 <form id="addIrisForm" method="post" action="http://127.0.0.1:8000/api/data">
     <div class="row mb-3 row-input">
         <h2>Add new iris</h2>

@@ -34,6 +34,9 @@ def add(request):
             return HttpResponse(new_iris_form)
     return render(request, "irises_analysis/add.html", {'form': form})
 
+def predict(request):
+    return render(request, "irises_analysis/predict.html")
+
 def data(request):
     if request.method == "GET":
         queryset = models.Iris.objects.all()
