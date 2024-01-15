@@ -56,3 +56,13 @@ def data(request):
             message = {"message": "Invalid data"}
             json_message = json.dumps(message)
             return HttpResponse(json_message, status=400)
+
+def delete(request, record_id):
+    try:
+        iris = models.Iris.objects.get(id=record_id)
+        iris.delete()
+        return HttpResponse("Success")
+    except:
+        return HttpResponse("Failed")
+
+
