@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core.serializers import serialize
 import requests
+import json
 from . import form_add
 from . import models
 
@@ -39,4 +40,19 @@ def data(request):
         data = serialize('json', queryset)
         return HttpResponse(data, content_type='application/json')
     if request.method == "POST":
-        return HttpResponse("POST")
+        new_iris_form = form_add.Form_add(request.POST)
+        if new_iris_form.is_valid():
+            data = new_iris_form.cleaned_data
+            iris = models.Iris(sepal_length=data["sepal_length"],
+                                sepal_width=data["sepal_width"],
+                                petal_length=data["petal_length"],
+                                petal_width=data["petal_width"],
+                                iris_class=data["iris_class"])
+            iris.save()
+            iris_json = serialize('json', [iris])
+            print(iris_json)
+            return JsonResponse(iris_json, safe=False)
+        else:
+            message = {"message": "Invalid data"}
+            json_message = json.dumps(message)
+            return HttpResponse(json_message, status=400)
