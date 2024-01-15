@@ -30,3 +30,13 @@
     padding-bottom: 30px;
 }
 
+#irisesTable tr {
+    transition: opacity 0.5s ease;
+}
+
+.row-fade-out {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+

@@ -1,9 +1,9 @@
 {% extends "irises_analysis/layout.html" %}
 {% load static %}
-
 {% block body %}
 <!-- Example single danger button -->
-<table class="table table-striped">
+
+<table class="table table-striped" id="irisesTable">
     <thead>
         <tr>
             <th scope="col">ID</th>
@@ -17,7 +17,7 @@
     </thead>
     <tbody>
         {% for row in data%}
-        <tr>
+        <tr id="{{ row.pk }}">
             <th>{{ row.pk }}</th>
             <th>{{ row.fields.sepal_length }}</th>
             <th>{{ row.fields.sepal_width }}</th>
@@ -30,8 +30,8 @@
                         Action
                     </button>
                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" onclick="deleteElement('{{ row.pk }}')">Delete</a></li>
                         <li><a class="dropdown-item" href="#">Edit</a></li>
-                        <li><a class="dropdown-item" href="#">Delete</a></li>
                     </ul>
                 </div>
             </th>
@@ -41,4 +41,32 @@
 
 
 </table>
+
+<script>
+    function deleteElement(elementID) {
+        console.log("elementID: " + elementID);
+        var fetchURL = "http://127.0.0.1:8000/api/data/" + elementID
+        fetch(fetchURL)
+            .then(response => {
+                if(response.status == 200) {
+                    console.log("success")
+                    deleteTableRow(elementID)
+                }
+                else if(response.status == 400) {
+                    console.log("failed")
+                    alert("Record not found");
+                }
+            })
+    }
+
+    function deleteTableRow(rowID) {
+        var table = document.getElementById("irisesTable");
+        var rowToDelete = document.getElementById(rowID);
+        rowToDelete.classList.add("row-fade-out");
+        setTimeout(function () {
+            table.deleteRow(rowToDelete.rowIndex);
+        }, 500)
+    }
+</script>
+
 {% endblock %}

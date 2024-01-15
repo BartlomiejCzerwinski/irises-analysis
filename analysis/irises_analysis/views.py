@@ -61,8 +61,8 @@ def delete(request, record_id):
     try:
         iris = models.Iris.objects.get(id=record_id)
         iris.delete()
-        return HttpResponse("Success")
+        return HttpResponse({"deleted_id": record_id}, status=200)
     except:
-        return HttpResponse("Failed")
+        return HttpResponse({"error": "Record not found"}, status=400)
 
 
