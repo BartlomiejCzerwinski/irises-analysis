@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block body %}
-<form id="addIrisForm" method="post">
+<form id="addIrisForm" method="post" action="http://127.0.0.1:8000/api/data">
     <div class="row mb-3 row-input">
         <h2>Add new iris</h2>
     </div>
@@ -19,6 +19,7 @@
             <span class="input-group-text">0.00</span>
         </div>
     </div>
+    <p> </p>
 
     <div class="row mb-3 row-input">
         <div class="input-group addFormInput">
