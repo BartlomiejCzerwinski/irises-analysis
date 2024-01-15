@@ -43,20 +43,28 @@
 </table>
 
 <script>
+    var csrf_token = "{{ csrf_token }}"
     function deleteElement(elementID) {
-        console.log("elementID: " + elementID);
+        console.log("elementID: " + elementID + csrf_token);
         var fetchURL = "http://127.0.0.1:8000/api/data/" + elementID
-        fetch(fetchURL)
-            .then(response => {
-                if(response.status == 200) {
-                    console.log("success")
-                    deleteTableRow(elementID)
-                }
-                else if(response.status == 400) {
-                    console.log("failed")
-                    alert("Record not found");
-                }
-            })
+        console.log("CSRF Token:", csrf_token);
+        fetch(fetchURL, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrf_token,
+            },
+        })
+        .then(response => {
+            if(response.status == 200) {
+                console.log("success")
+                deleteTableRow(elementID)
+            }
+            else if(response.status == 400) {
+                console.log("failed")
+                alert("Record not found");
+            }
+        })
     }
 
     function deleteTableRow(rowID) {

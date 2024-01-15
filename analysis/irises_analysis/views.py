@@ -6,6 +6,7 @@ import json
 from . import form_add
 from . import models
 
+
 # Create your views here.
 def index(request):
     api_get_data_url = 'http://127.0.0.1:8000/api/data'
@@ -58,11 +59,13 @@ def data(request):
             return HttpResponse(json_message, status=400)
 
 def delete(request, record_id):
-    try:
-        iris = models.Iris.objects.get(id=record_id)
-        iris.delete()
-        return HttpResponse({"deleted_id": record_id}, status=200)
-    except:
-        return HttpResponse({"error": "Record not found"}, status=400)
+    print(request)
+    if request.method == "DELETE":
+        try:
+            iris = models.Iris.objects.get(id=record_id)
+            iris.delete()
+            return HttpResponse({"deleted_id": record_id}, status=200)
+        except:
+            return HttpResponse({"error": "Record not found"}, status=400)
 
 
