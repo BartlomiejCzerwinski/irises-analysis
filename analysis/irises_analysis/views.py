@@ -10,6 +10,7 @@ from django.views.decorators.http import require_http_methods
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+from sklearn.neighbors import KNeighborsClassifier
 
 def index(request):
     api_get_data_url = 'http://127.0.0.1:8000/api/data'
@@ -52,15 +53,21 @@ def predict(request):
         cookies = requests.utils.cookiejar_from_dict(csrf_cookie)
         headers = {'X-CSRFToken': csrf_token}
         response = requests.post(api_predict_url, cookies=cookies, headers=headers)
+        if response.status_code == 200:
+            response_str = response.content.decode('utf-8')
+            predicted_class = response_str["class"]
+            print("MY RESPONSE: ", str(response_str))
+        else:
+            return HttpResponse("400 error")
 
     return render(request, "irises_analysis/predict.html", {'form': form})
 
 def api_predictions(request):
     print("REQUEST:", str(request))
-    sepal_length = request.GET.get('sepal_length')
-    sepal_width = request.GET.get('sepal_width')
-    petal_length = request.GET.get('petal_length')
-    petal_width = request.GET.get('petal_width')
+    sepal_length = float(request.GET.get('sepal_length'))
+    sepal_width = float(request.GET.get('sepal_width'))
+    petal_length = float(request.GET.get('petal_length'))
+    petal_width = float(request.GET.get('petal_width'))
     form = form_add.Form_predict({
             'sepal_length': sepal_length,
             'sepal_width': sepal_width,
@@ -68,7 +75,15 @@ def api_predictions(request):
             'petal_width': petal_width,
         })
     if form.is_valid():
-        pass
+        all_instances = models.Iris.objects.values_list('sepal_length', 'sepal_width', 'petal_length', 'petal_width')
+        labels = models.Iris.objects.values_list('iris_class', flat=True)
+        knn_model = KNeighborsClassifier(n_neighbors=3)
+        knn_model.fit(all_instances, labels)
+        test_instance = [[sepal_length, sepal_width, petal_length, petal_width]]
+        predicted_class = knn_model.predict(test_instance)
+        message = {"class": str(predicted_class[0])}
+        json_message = json.dumps(message)
+        return HttpResponse(json_message, status=200)
     else:
         message = {"message": "Invalid data"}
         json_message = json.dumps(message)
