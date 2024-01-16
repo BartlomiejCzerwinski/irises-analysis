@@ -11,6 +11,12 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 from sklearn.neighbors import KNeighborsClassifier
+import pandas as pd
+
+IRIS_CLASSES = {'1': 'Setosa',
+                '2': 'Versicolour',
+                '3': 'Virginica'}
+
 
 def index(request):
     api_get_data_url = 'http://127.0.0.1:8000/api/data'
@@ -58,11 +64,19 @@ def predict(request):
             response_dict = json.loads(response_str)
             predicted_class = response_dict["class"]
             print("MY RESPONSE: ", str(response_str))
-            return render(request, "irises_analysis/predicted.html", {'class': predicted_class})
+            generate_pair_plots()
+            return render(request, "irises_analysis/predicted.html", {'class': IRIS_CLASSES[predicted_class]})
         else:
             return HttpResponse("400 error")
 
     return render(request, "irises_analysis/predict.html", {'form': form})
+
+def generate_pair_plots():
+    iris_data = models.Iris.objects.all().values()
+    iris_df = pd.DataFrame.from_records(iris_data)
+    plt.scatter(iris_df["sepal_length"], iris_df["sepal_width"], c=iris_df["iris_class"])
+    plt.show()
+    print(iris_df)
 
 def api_predictions(request):
     print("REQUEST:", str(request))
@@ -91,28 +105,14 @@ def api_predictions(request):
         json_message = json.dumps(message)
         return HttpResponse(json_message, status=400)
 
-def generate_plot():
-    x = [4, 5, 10, 4, 3, 11, 14 , 8, 10, 12]
-    y = [21, 19, 24, 17, 16, 25, 24, 22, 21, 21]
-    z = [21, 19, 24, 17, 16, 25, 24, 22, 21, 21]
-    classes = [0, 0, 1, 0, 0, 1, 1, 0, 1, 1]
-
-    plt.scatter(x, y, s=z, c=classes)
-
-    buffer = BytesIO()
-    plt.savefig(buffer, format="jpg")
-    buffer.seek(0)
-
-    img_jpg = buffer.getvalue()
-    buffer.close()
-    graphic = base64.b64encode(img_jpg).decode('utf-8')
-    return graphic
-
-
 def api_data(request):
     if request.method == "GET":
         queryset = models.Iris.objects.all()
         data = serialize('json', queryset)
+        data_deserialized = json.loads(data)
+        for element in data_deserialized:
+            element['fields']['iris_class'] = IRIS_CLASSES[str(element['fields']['iris_class'])]
+        data = json.dumps(data_deserialized)
         return HttpResponse(data, content_type='application/json')
     if request.method == "POST":
         new_iris_form = form_add.Form_add(request.POST)
