@@ -7,6 +7,9 @@ from . import form_add
 from . import models
 from django.middleware.csrf import get_token
 from django.views.decorators.http import require_http_methods
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 
 def index(request):
     api_get_data_url = 'http://127.0.0.1:8000/api/data'
@@ -31,7 +34,63 @@ def add(request):
     return render(request, "irises_analysis/add.html", {'form': form})
 
 def predict(request):
-    return render(request, "irises_analysis/predict.html")
+    form = form_add.Form_predict()
+    if request.method == "POST":
+        sepal_length = request.POST['sepal_length']
+        sepal_width = request.POST['sepal_width']
+        petal_length = request.POST['petal_length']
+        petal_width = request.POST['petal_width']
+
+        api_predict_url = 'http://127.0.0.1:8000/api/predictions' + \
+                            "?sepal_length=" + sepal_length + \
+                            "&sepal_width=" + str(sepal_width) + \
+                            "&petal_length=" + str(petal_length) + \
+                            "&petal_width=" + str(petal_width)
+
+        csrf_token = get_token(request)
+        csrf_cookie = {'csrftoken': csrf_token}
+        cookies = requests.utils.cookiejar_from_dict(csrf_cookie)
+        headers = {'X-CSRFToken': csrf_token}
+        response = requests.post(api_predict_url, cookies=cookies, headers=headers)
+
+    return render(request, "irises_analysis/predict.html", {'form': form})
+
+def api_predictions(request):
+    print("REQUEST:", str(request))
+    sepal_length = request.GET.get('sepal_length')
+    sepal_width = request.GET.get('sepal_width')
+    petal_length = request.GET.get('petal_length')
+    petal_width = request.GET.get('petal_width')
+    form = form_add.Form_predict({
+            'sepal_length': sepal_length,
+            'sepal_width': sepal_width,
+            'petal_length': petal_length,
+            'petal_width': petal_width,
+        })
+    if form.is_valid():
+        pass
+    else:
+        message = {"message": "Invalid data"}
+        json_message = json.dumps(message)
+        return HttpResponse(json_message, status=400)
+
+def generate_plot():
+    x = [4, 5, 10, 4, 3, 11, 14 , 8, 10, 12]
+    y = [21, 19, 24, 17, 16, 25, 24, 22, 21, 21]
+    z = [21, 19, 24, 17, 16, 25, 24, 22, 21, 21]
+    classes = [0, 0, 1, 0, 0, 1, 1, 0, 1, 1]
+
+    plt.scatter(x, y, s=z, c=classes)
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format="jpg")
+    buffer.seek(0)
+
+    img_jpg = buffer.getvalue()
+    buffer.close()
+    graphic = base64.b64encode(img_jpg).decode('utf-8')
+    return graphic
+
 
 def api_data(request):
     if request.method == "GET":

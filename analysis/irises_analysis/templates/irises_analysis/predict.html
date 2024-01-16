@@ -14,4 +14,43 @@
         <a class="nav-link active" aria-current="page" href="{%url 'predict'%}">Predict</a>
     </li>
 </ul>
+
+<form id="addIrisForm" method="post">
+    {% csrf_token %}
+    <div class="row mb-3 row-input">
+        <h2>Predict Iris class</h2>
+    </div>
+    <div class="row mb-3 row-input">
+        <div class="input-group addFormInput">
+            {{ form.sepal_length }}
+            <span class="input-group-text">cm</span>
+            <span class="input-group-text">0.00</span>
+        </div>
+        <div class="input-group addFormInput">
+            {{ form.sepal_width }}
+            <span class="input-group-text">cm</span>
+            <span class="input-group-text">0.00</span>
+        </div>
+    </div>
+    <p> </p>
+
+    <div class="row mb-3 row-input">
+        <div class="input-group addFormInput">
+            {{ form.petal_length }}
+            <span class="input-group-text">cm</span>
+            <span class="input-group-text">0.00</span>
+        </div>
+        <div class="input-group addFormInput">
+            {{ form.petal_width }}
+            <span class="input-group-text">cm</span>
+            <span class="input-group-text">0.00</span>
+        </div>
+    </div>
+
+    <div class="row mb-3 row-input">
+        <button type="submit" class="btn btn-primary">Predict</button>
+    </div>
+
+</form>
+
 {% endblock %}

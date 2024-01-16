@@ -8,6 +8,6 @@ urlpatterns = [
     path("predict", views.predict, name="predict"),
     path("delete/<str:record_id>", views.delete, name="delete"),
     path("api/data", views.api_data, name="data"),
-    path("api/data/<str:record_id>", views.api_delete, name="delete api")
-    #path("api/predictions") TODO
+    path("api/data/<str:record_id>", views.api_delete, name="delete api"),
+    path("api/predictions", views.api_predictions, name="predictions")
 ]
