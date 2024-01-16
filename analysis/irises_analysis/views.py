@@ -8,8 +8,6 @@ from . import models
 from django.middleware.csrf import get_token
 from django.views.decorators.http import require_http_methods
 
-
-# Create your views here.
 def index(request):
     api_get_data_url = 'http://127.0.0.1:8000/api/data'
     response = requests.get(api_get_data_url)
@@ -19,13 +17,13 @@ def index(request):
     return render(request, "irises_analysis/index.html")
 
 def add(request):
-    api_get_data_url = 'http://127.0.0.1:8000/api/data'
+    api_add_data_url = 'http://127.0.0.1:8000/api/data'
     form = form_add.Form_add()
     if request.method == "POST":
         csrf_token = get_token(request)
         csrf_cookie = {'csrftoken': csrf_token}
         cookies = requests.utils.cookiejar_from_dict(csrf_cookie)
-        response = requests.post(api_get_data_url, data=request.POST, cookies = cookies)
+        response = requests.post(api_add_data_url, data=request.POST, cookies = cookies)
         if response.status_code == 200:
             return redirect('index')
         elif response.status_code == 400:
@@ -35,7 +33,7 @@ def add(request):
 def predict(request):
     return render(request, "irises_analysis/predict.html")
 
-def data(request):
+def api_data(request):
     if request.method == "GET":
         queryset = models.Iris.objects.all()
         data = serialize('json', queryset)
@@ -51,7 +49,6 @@ def data(request):
                                 iris_class=data["iris_class"])
             iris.save()
             iris_json = serialize('json', [iris])
-            print(iris_json)
             return JsonResponse(iris_json, safe=False)
         else:
             message = {"message": "Invalid data"}
@@ -59,7 +56,7 @@ def data(request):
             return HttpResponse(json_message, status=400)
 
 @require_http_methods(["POST"])
-def delete(request, record_id):
+def api_delete(request, record_id):
     if request.method == "POST":
         csrf_token = get_token(request)
         csrf_cookie = {'csrftoken': csrf_token}
@@ -80,6 +77,3 @@ def delete_api(request, record_id):
             return HttpResponse({"deleted_id": record_id}, status=200)
         except:
             return HttpResponse({"error": "Record not found"}, status=404)
-
-
-

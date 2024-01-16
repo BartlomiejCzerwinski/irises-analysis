@@ -57,7 +57,6 @@
     function deleteElement(elementID) {
         console.log("elementID: " + elementID + csrf_token);
         var fetchURL = "http://127.0.0.1:8000/delete/" + elementID
-        console.log("CSRF Token:", csrf_token);
         fetch(fetchURL, {
             method: "POST",
             headers: {
