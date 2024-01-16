@@ -12,6 +12,7 @@ from io import BytesIO
 import base64
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
+import itertools
 
 IRIS_CLASSES = {'1': 'Setosa',
                 '2': 'Versicolour',
@@ -64,19 +65,44 @@ def predict(request):
             response_dict = json.loads(response_str)
             predicted_class = response_dict["class"]
             print("MY RESPONSE: ", str(response_str))
-            generate_pair_plots()
-            return render(request, "irises_analysis/predicted.html", {'class': IRIS_CLASSES[predicted_class]})
+            predicted_iris = {'sepal_length': sepal_length, 'sepal_width': sepal_width, 'petal_length': petal_length, 'petal_width': petal_width}
+            plots = generate_pair_plots(predicted_iris)
+            print("PLOTS:", plots)
+            return render(request, "irises_analysis/predicted.html", {'class': IRIS_CLASSES[predicted_class], 'plots': plots})
         else:
             return HttpResponse("400 error")
 
     return render(request, "irises_analysis/predict.html", {'form': form})
 
-def generate_pair_plots():
+def generate_pair_plots(predicted_iris):
+    feature_names = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+    combinations = list(itertools.combinations(feature_names, 2))
+    plots = []
+    for combination in combinations:
+        plots.append(generate_pair_plot(combination[0], combination[1], predicted_iris))
+    return plots
+
+def generate_pair_plot(x, y, predicted_iris):
+    class_colors = {'Setosa': 'red', 'Versicolour': 'blue', 'Virginica': 'green', 'Predicted': 'purple'}
     iris_data = models.Iris.objects.all().values()
     iris_df = pd.DataFrame.from_records(iris_data)
-    plt.scatter(iris_df["sepal_length"], iris_df["sepal_width"], c=iris_df["iris_class"])
-    plt.show()
-    print(iris_df)
+    iris_df = iris_df.replace({"iris_class": {1: 'Setosa', 2: 'Versicolour', 3: 'Virginica'}})
+    plt.plot(predicted_iris[x], predicted_iris[y], c='purple', marker="D", markersize=15)
+    plt.axis('equal')
+    plt.scatter(iris_df[x], iris_df[y], c=iris_df["iris_class"].map(class_colors))
+    plt.xlabel(x)
+    plt.ylabel(y)
+    handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=10, label=label) for label, color in class_colors.items()]
+    plt.legend(handles=handles)
+
+    image_stream = BytesIO()
+    plt.savefig(image_stream, format='png')
+    image_stream.seek(0)
+
+    image_base64 = base64.b64encode(image_stream.read()).decode('utf-8')
+    plt.clf()
+    return image_base64
+
 
 def api_predictions(request):
     print("REQUEST:", str(request))

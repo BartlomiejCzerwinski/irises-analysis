@@ -16,6 +16,7 @@
 </ul>
 
 <h2>Predicted class: {{ class }}</h2>
-{{ class }}
-
+{% for plot in plots %}
+  <img src="data:image/png;base64,{{ plot }}" alt="Plot">
+{% endfor %}
 {% endblock %}
