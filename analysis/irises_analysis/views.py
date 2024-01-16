@@ -55,8 +55,10 @@ def predict(request):
         response = requests.post(api_predict_url, cookies=cookies, headers=headers)
         if response.status_code == 200:
             response_str = response.content.decode('utf-8')
-            predicted_class = response_str["class"]
+            response_dict = json.loads(response_str)
+            predicted_class = response_dict["class"]
             print("MY RESPONSE: ", str(response_str))
+            return render(request, "irises_analysis/predicted.html", {'class': predicted_class})
         else:
             return HttpResponse("400 error")
 
