@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.core.serializers import serialize
 import requests
 import json
 from . import form_add
 from . import models
 from django.middleware.csrf import get_token
+from django.views.decorators.http import require_http_methods
 
 
 # Create your views here.
@@ -14,7 +15,6 @@ def index(request):
     response = requests.get(api_get_data_url)
     if response.status_code == 200:
         data = response.json()
-        print(data)
         return render(request, "irises_analysis/index.html", {'data': data})
     return render(request, "irises_analysis/index.html")
 
@@ -38,11 +38,9 @@ def predict(request):
 def data(request):
     if request.method == "GET":
         queryset = models.Iris.objects.all()
-        print("DATA API: ", queryset)
         data = serialize('json', queryset)
         return HttpResponse(data, content_type='application/json')
     if request.method == "POST":
-        print("jestesmy tutaj")
         new_iris_form = form_add.Form_add(request.POST)
         if new_iris_form.is_valid():
             data = new_iris_form.cleaned_data
@@ -60,15 +58,28 @@ def data(request):
             json_message = json.dumps(message)
             return HttpResponse(json_message, status=400)
 
+@require_http_methods(["POST"])
 def delete(request, record_id):
-    print(request)
+    if request.method == "POST":
+        csrf_token = get_token(request)
+        csrf_cookie = {'csrftoken': csrf_token}
+        headers = {'X-CSRFToken': csrf_token}
+        cookies = requests.utils.cookiejar_from_dict(csrf_cookie)
+        api_delete_data_url = 'http://127.0.0.1:8000/api/data/' + record_id
+        response = requests.delete(api_delete_data_url, headers=headers, cookies=cookies)
+        if response.status_code == 200:
+            return redirect("/", status=200)
+        else:
+            return HttpResponse("404 error", status=404)
+
+def delete_api(request, record_id):
     if request.method == "DELETE":
         try:
             iris = models.Iris.objects.get(id=record_id)
             iris.delete()
             return HttpResponse({"deleted_id": record_id}, status=200)
         except:
-            return HttpResponse({"error": "Record not found"}, status=400)
+            return HttpResponse({"error": "Record not found"}, status=404)
 
 
 

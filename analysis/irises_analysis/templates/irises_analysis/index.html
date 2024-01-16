@@ -42,7 +42,6 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" onclick="deleteElement('{{ row.pk }}')">Delete</a></li>
-                        <li><a class="dropdown-item" href="#">Edit</a></li>
                     </ul>
                 </div>
             </th>
@@ -57,10 +56,10 @@
     var csrf_token = "{{ csrf_token }}"
     function deleteElement(elementID) {
         console.log("elementID: " + elementID + csrf_token);
-        var fetchURL = "http://127.0.0.1:8000/api/data/" + elementID
+        var fetchURL = "http://127.0.0.1:8000/delete/" + elementID
         console.log("CSRF Token:", csrf_token);
         fetch(fetchURL, {
-            method: "DELETE",
+            method: "POST",
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrf_token,
