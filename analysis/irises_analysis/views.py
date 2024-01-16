@@ -56,7 +56,7 @@ def api_data(request):
             return HttpResponse(json_message, status=400)
 
 @require_http_methods(["POST"])
-def api_delete(request, record_id):
+def delete(request, record_id):
     if request.method == "POST":
         csrf_token = get_token(request)
         csrf_cookie = {'csrftoken': csrf_token}
@@ -69,7 +69,7 @@ def api_delete(request, record_id):
         else:
             return HttpResponse("404 error", status=404)
 
-def delete_api(request, record_id):
+def api_delete(request, record_id):
     if request.method == "DELETE":
         try:
             iris = models.Iris.objects.get(id=record_id)
