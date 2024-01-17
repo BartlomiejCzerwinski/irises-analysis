@@ -16,6 +16,7 @@
 </ul>
 
 <h2>Predicted class: {{ class }}</h2>
+<h3>Based on {{ knn_number }} neighbours</h3>
 {% for plot in plots %}
   <img src="data:image/png;base64,{{ plot }}" alt="Plot">
 {% endfor %}

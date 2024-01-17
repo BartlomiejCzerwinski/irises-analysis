@@ -75,7 +75,9 @@ def predict(request):
                                 'petal_width': petal_width}
             plots = generate_pair_plots(predicted_iris)
             return render(request, "irises_analysis/predicted.html",
-                            {'class': IRIS_CLASSES[predicted_class], 'plots': plots})
+                            {'class': IRIS_CLASSES[predicted_class],
+                             'plots': plots,
+                             'knn_number': KNN_N_PARAMETER})
         else:
             return HttpResponse("400 error")
     return render(request, "irises_analysis/predict.html", {'form': form})
