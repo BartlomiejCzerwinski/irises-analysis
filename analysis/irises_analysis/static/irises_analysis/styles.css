@@ -3,6 +3,9 @@
     padding-bottom: 30px;
 }
 
+body {
+    text-align: center;
+}
 .body {
     width: 50%;
     margin-right: auto;

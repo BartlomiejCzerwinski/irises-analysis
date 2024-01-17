@@ -8,11 +8,14 @@ from . import models
 from django.middleware.csrf import get_token
 from django.views.decorators.http import require_http_methods
 import matplotlib.pyplot as plt
+import matplotlib
 from io import BytesIO
 import base64
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import itertools
+import os
+from analysis.settings import BASE_DIR
 
 IRIS_CLASSES = {'1': 'Setosa',
                 '2': 'Versicolour',
@@ -22,6 +25,7 @@ IRIS_CLASSES = {'1': 'Setosa',
 def index(request):
     api_get_data_url = 'http://127.0.0.1:8000/api/data'
     response = requests.get(api_get_data_url)
+    #init_dataset("iris.csv")
     if response.status_code == 200:
         data = response.json()
         return render(request, "irises_analysis/index.html", {'data': data})
@@ -64,10 +68,8 @@ def predict(request):
             response_str = response.content.decode('utf-8')
             response_dict = json.loads(response_str)
             predicted_class = response_dict["class"]
-            print("MY RESPONSE: ", str(response_str))
             predicted_iris = {'sepal_length': sepal_length, 'sepal_width': sepal_width, 'petal_length': petal_length, 'petal_width': petal_width}
             plots = generate_pair_plots(predicted_iris)
-            print("PLOTS:", plots)
             return render(request, "irises_analysis/predicted.html", {'class': IRIS_CLASSES[predicted_class], 'plots': plots})
         else:
             return HttpResponse("400 error")
@@ -75,6 +77,7 @@ def predict(request):
     return render(request, "irises_analysis/predict.html", {'form': form})
 
 def generate_pair_plots(predicted_iris):
+    matplotlib.use('Agg')
     feature_names = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
     combinations = list(itertools.combinations(feature_names, 2))
     plots = []
@@ -87,7 +90,7 @@ def generate_pair_plot(x, y, predicted_iris):
     iris_data = models.Iris.objects.all().values()
     iris_df = pd.DataFrame.from_records(iris_data)
     iris_df = iris_df.replace({"iris_class": {1: 'Setosa', 2: 'Versicolour', 3: 'Virginica'}})
-    plt.plot(predicted_iris[x], predicted_iris[y], c='purple', marker="D", markersize=15)
+    plt.plot(float(predicted_iris[x]), float(predicted_iris[y]), c='purple', marker="D", markersize=15)
     plt.axis('equal')
     plt.scatter(iris_df[x], iris_df[y], c=iris_df["iris_class"].map(class_colors))
     plt.xlabel(x)
@@ -105,7 +108,6 @@ def generate_pair_plot(x, y, predicted_iris):
 
 
 def api_predictions(request):
-    print("REQUEST:", str(request))
     sepal_length = float(request.GET.get('sepal_length'))
     sepal_width = float(request.GET.get('sepal_width'))
     petal_length = float(request.GET.get('petal_length'))
@@ -179,3 +181,14 @@ def api_delete(request, record_id):
             return HttpResponse({"deleted_id": record_id}, status=200)
         except:
             return HttpResponse({"error": "Record not found"}, status=404)
+
+def init_dataset(dataset_name):
+    file_path = os.path.join(BASE_DIR, dataset_name)
+    df = pd.read_csv(file_path, names=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'iris_class'])
+    for index, row in df.iterrows():
+        iris = models.Iris(sepal_length=row['sepal_length'],
+                                        sepal_width=row['sepal_width'],
+                                        petal_length=row['petal_length'],
+                                        petal_width=row['petal_width'],
+                                        iris_class=row['iris_class'])
+        iris.save()
