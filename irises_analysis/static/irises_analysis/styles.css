@@ -15,7 +15,7 @@ body {
 .addFormInput {
     width: 40%;
     flex: 1;
-    margin: 0 50px; /* Dodaj margines 50px na lewo i 50px na prawo dla przerwy 100px */
+    margin: 0 50px;
 }
 
 
