@@ -24,23 +24,25 @@ IRIS_CLASSES = {'1': 'Setosa',
 
 KNN_N_PARAMETER = 3
 
+API_ADD_DATA_URL = 'http://127.0.0.1:8000/api/data'
+API_GET_DATA_URL = 'http://127.0.0.1:8000/api/data'
+API_DELETE_URL = 'http://127.0.0.1:8000/api/data/'
+API_PREDICTIONS_URL = 'http://127.0.0.1:8000/api/predictions'
+
 def index(request):
-    api_get_data_url = 'http://127.0.0.1:8000/api/data'
-    response = requests.get(api_get_data_url)
-    #init_dataset("iris.csv")
+    response = requests.get(API_GET_DATA_URL)
     if response.status_code == 200:
         data = response.json()
         return render(request, "irises_analysis/index.html", {'data': data})
     return render(request, "irises_analysis/index.html")
 
 def add(request):
-    api_add_data_url = 'http://127.0.0.1:8000/api/data'
     form = forms.Form_add()
     if request.method == "POST":
         csrf_token = get_token(request)
         csrf_cookie = {'csrftoken': csrf_token}
         cookies = requests.utils.cookiejar_from_dict(csrf_cookie)
-        response = requests.post(api_add_data_url, data=request.POST, cookies = cookies)
+        response = requests.post(API_ADD_DATA_URL, data=request.POST, cookies=cookies)
         if response.status_code == 200:
             return redirect('index')
         elif response.status_code == 400:
@@ -55,7 +57,7 @@ def predict(request):
         petal_length = request.POST['petal_length']
         petal_width = request.POST['petal_width']
 
-        api_predict_url = 'http://127.0.0.1:8000/api/predictions' + \
+        api_predict_url = API_PREDICTIONS_URL + \
                             "?sepal_length=" + sepal_length + \
                             "&sepal_width=" + str(sepal_width) + \
                             "&petal_length=" + str(petal_length) + \
@@ -89,7 +91,7 @@ def delete(request, record_id):
         csrf_cookie = {'csrftoken': csrf_token}
         headers = {'X-CSRFToken': csrf_token}
         cookies = requests.utils.cookiejar_from_dict(csrf_cookie)
-        api_delete_data_url = 'http://127.0.0.1:8000/api/data/' + record_id
+        api_delete_data_url = API_DELETE_URL + record_id
         response = requests.delete(api_delete_data_url, headers=headers, cookies=cookies)
         if response.status_code == 200:
             return redirect("/", status=200)
