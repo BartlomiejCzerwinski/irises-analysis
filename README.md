@@ -1,6 +1,6 @@
 # Irises Analysis
 Web application for database managing and prediction class of provided data. The prediction part of an application uses machine learning (K nearest neighbors algorithm) to predict the class of provided data based on continuous features.
-You can learn more about KNN HERE(https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm).
+You can learn more about KNN [HERE](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm).
 
 ## Preview and deletion of data records
 To preview records in the database open **Main page**. If you want to delete the record, click **Action** button and select proper option.
